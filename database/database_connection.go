@@ -1,9 +1,11 @@
 package database
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -25,14 +27,26 @@ func DBInstance() *mongo.Client {
 
 	fmt.Println("MongoDB URI: ", MongoDb)
 
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	clientOptions := options.Client().ApplyURI(MongoDb)
 
 	client, err := mongo.Connect(clientOptions)
 
 	if err != nil {
+		log.Println("Error connecting to MongoDB:", err)
 		return nil
 	}
 
+	// Verify connection with Ping
+	err = client.Ping(ctx, nil)
+	if err != nil {
+		log.Println("Error pinging MongoDB:", err)
+		return nil
+	}
+
+	fmt.Println("Successfully connected to MongoDB!")
 	return client
 }
 
