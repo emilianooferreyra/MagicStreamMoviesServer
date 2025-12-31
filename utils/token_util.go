@@ -124,3 +124,37 @@ func ValidateToken(tokenString string) (*SignedDetails, error) {
 	}
 	return claims, nil
 }
+
+func GetUserIdFromContext(c *gin.Context) (string, error) {
+	userId, exists := c.Get("userId")
+
+	if !exists {
+		return "", errors.New("userId does not exists in this context")
+	}
+
+	id, ok := userId.(string)
+
+	if !ok {
+		return "", errors.New("Unable to retrieve userId")
+	}
+
+	return id, nil
+
+}
+
+func GetRoleFromContext(c *gin.Context) (string, error) {
+	role, exists := c.Get("role")
+
+	if !exists {
+		return "", errors.New("Role does not exists in this context")
+	}
+
+	memberRole, ok := role.(string)
+
+	if !ok {
+		return "", errors.New("Unable to retrieve userId")
+	}
+
+	return memberRole, nil
+
+}
